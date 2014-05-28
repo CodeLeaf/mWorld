@@ -1,6 +1,7 @@
-var source = 'src/';
-var assets = 'assets/';
-var build = 'build/';
+var source      = 'src/';
+var assets      = 'assets/';
+var build       = 'build/';
+var production  = 'production/';
 // Also change in rule uglify and less
 
 /*global module */
@@ -45,19 +46,61 @@ module.exports = function(grunt) {
 		copy: {
 			dist: {
 				files: [
+				  // Copy HTML
 					{
 						expand: true, flatten: true, filter: 'isFile',
 						src: [source + '*.html'],
 						dest: build
 					},
+					// HTML to production
+					{
+						expand: true, flatten: true, filter: 'isFile',
+						src: [source + '*.html'],
+						dest: production
+					},
+					// Copy assets
 					{
 						expand: true,
 						src: [assets + '**/*'],
 						dest: build
 					},
+					// Audio assets to production
+					{
+						expand: true,
+						cwd: assets + 'audio/',
+						src: ['**/*'],
+						dest: production + 'assets/audio/'
+					},
+					// Image assets to production
+					{
+						expand: true,
+            cwd: assets + 'img/',
+						src: ['**/*'],
+						dest: production + 'assets/images/'
+					},
+					// Javascript lib assets to production
+					{
+						expand: true,
+            cwd: assets + 'libs/',
+						src: ['**/*.js'],
+						dest: production + 'lib/assets/javascripts/'
+					},
+          // Misc lib assets to production
+          {
+            expand: true,
+            cwd: assets + 'libs/',
+            src: ['**/*', '!**/*.js'],
+            dest: production + 'lib/assets/javascripts/'
+          },
+					// Game.js to production
           {
             src: build + 'game.js',
-            dest: build + 'game.js.erb'
+            dest: production + 'game.js.erb'
+          },
+          // Game.css to production
+          {
+            src: build + 'style.css',
+            dest: production + 'game.css'
           }
 				]
 			}
@@ -65,7 +108,7 @@ module.exports = function(grunt) {
 		// Update javascript file to reference images and audio files with the rails assets pipe line
     'regex-replace': {
       dist: {
-        src: build + 'game.js.erb',
+        src: production + 'game.js.erb',
         actions: [
           {
             search: '\'assets/(?:img|audio)/([^\']*)',
