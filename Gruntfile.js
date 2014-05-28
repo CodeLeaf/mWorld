@@ -69,7 +69,7 @@ module.exports = function(grunt) {
         actions: [
           {
             search: '\'assets/(?:img|audio)/([^\']*)',
-            replace: '\'<%= assets_path(\'$1\') __END_TAG__',
+            replace: '\'<%= asset_path(\'$1\') __END_TAG__',
             flags: 'gi'
           },
           {
