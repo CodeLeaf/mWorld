@@ -54,10 +54,33 @@ module.exports = function(grunt) {
 						expand: true,
 						src: [assets + '**/*'],
 						dest: build
-					}
+					},
+          {
+            src: build + 'game.js',
+            dest: build + 'game.js.erb'
+          }
 				]
 			}
 		},
+		// Update javascript file to reference images and audio files with the rails assets pipe line
+    'regex-replace': {
+      dist: {
+        src: build + 'game.js.erb',
+        actions: [
+          {
+            search: '\'assets/(?:img|audio)/([^\']*)',
+            replace: '\'<%= assets_path(\'$1\') __END_TAG__',
+            flags: 'gi'
+          },
+          {
+            search: '__END_TAG__',
+            replace: '%>',
+            flags: 'gi'
+          }
+        ]
+        
+      }
+    },
 		connect: {
 			server: {
 				// http://localhost:9000/index.html
@@ -92,12 +115,14 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-regex-replace');
 
 	// Default task.
 	grunt.registerTask('default', [
-		'concat', 'jshint', 'uglify',
-		'less', 'autoprefixer',
-		'copy', 'connect', 'watch'
-	]);
+    'concat', 'jshint', 'uglify',
+    'less', 'autoprefixer',
+    'copy','regex-replace',
+    'connect', 'watch'
+  ]);
 
 };
